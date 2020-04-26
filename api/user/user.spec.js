@@ -1,7 +1,7 @@
 const assert = require('assert')
 const should = require('should')
 const request = require('supertest')
-const app = require('./index')
+const app = require('../../index')
  
  describe('GET /users', ()=>{
     describe('성공',()=>{
@@ -87,7 +87,7 @@ const app = require('./index')
     describe('성공',()=>{
         it('204 응답',(done)=>{
             request(app)
-                .delete('/users/3')
+                .delete('/users/2')
                 .expect(204)
                 .end(done)
                 
@@ -100,8 +100,44 @@ const app = require('./index')
         it('id가 숫자가 아닐 경우 400을 응답한다',(done)=>{
             request(app)
                 .delete('/users/one')
-                .expect(400)
+                .expect(400) 
                 .end(done)
+                
+        })
+ 
+
+    })
+
+
+
+ })
+
+ describe('POST /users', ()=>{
+    describe('성공',()=>{
+        it('201 응답',(done)=>{
+            request(app)
+                .post('/users').send({name:'Daniel'})
+                .expect(201)
+                .end((err,res)=>{
+                    res.body.should.have.property('name','Daniel')
+                    done()
+                })
+        })        
+    })
+
+    describe('실패',()=>{
+        it('name이 없으면 400 응답',(done)=>{
+            request(app)
+                .post('/users').send({})
+                .expect(400).end(done)
+                
+        })
+
+        it('name이 중복이면 409 응답',(done)=>{
+            request(app)
+                .post('/users').send({name : 'Alice'})
+                .expect(409).end(done)
+                
                 
         })
  
